@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Runehatch</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: #0a0710;
+    color: #e8dcc8;
+    font-family: 'Crimson Pro', Georgia, serif;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── SCREENS ── */
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ── BACKGROUND ── */
+  .bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 20%, #1a0a2e 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 80% 80%, #0d1a2e 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, #12062a 0%, transparent 70%);
+  }
+
+  .rune {
+    position: absolute;
+    color: #c9b4ff;
+    font-family: serif;
+    pointer-events: none;
+    animation: runeFloat var(--dur, 6s) ease-in-out var(--delay, 0s) infinite alternate;
+  }
+  @keyframes runeFloat {
+    from { transform: translateY(0) rotate(-5deg); opacity: var(--op, 0.06); }
+    to   { transform: translateY(-18px) rotate(5deg); opacity: calc(var(--op, 0.06) * 2); }
+  }
+
+  /* ── MENU SCREEN ── */
+  #menu { align-items: center; justify-content: center; gap: 0; }
+
+  .menu-egg {
+    font-size: 80px;
+    margin-bottom: 16px;
+    animation: eggFloat 2.5s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 30px #9b5de5aa);
+  }
+  @keyframes eggFloat {
+    from { transform: translateY(0) scale(1); }
+    to   { transform: translateY(-14px) scale(1.05); filter: drop-shadow(0 0 50px #9b5de5cc); }
+  }
+
+  .eyebrow {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 9px; letter-spacing: 5px; color: #9b7de8;
+    text-transform: uppercase; margin-bottom: 12px;
+    animation: fadeUp 0.8s 0.2s both;
+  }
+  .game-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(36px, 10vw, 64px);
+    font-weight: 900; letter-spacing: 4px;
+    background: linear-gradient(135deg, #f0d97a, #e8b4f8, #90c9ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeUp 0.9s 0.1s both, shimmer 4s ease infinite;
+    background-size: 300%;
+  }
+  @keyframes shimmer {
+    0%,100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+  .tagline {
+    font-style: italic; font-size: 14px; color: #a898c8;
+    letter-spacing: 1.5px; margin: 10px 0 48px;
+    animation: fadeUp 0.8s 0.4s both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .menu-buttons { display: flex; flex-direction: column; align-items: center; gap: 14px; animation: fadeUp 0.8s 0.6s both; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #6a0dad, #9b5de5);
+    border: 1px solid #c9a0ff44; color: #f0e8ff;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 11px; letter-spacing: 3px;
+    padding: 16px 52px; cursor: pointer;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    transition: all 0.2s; border: none; outline: none;
+  }
+  .btn-primary:active { transform: scale(0.97); opacity: 0.85; }
+
+  .btn-secondary {
+    background: transparent; border: 1px solid #ffffff22;
+    color: #a898c8; font-family: 'Crimson Pro', serif;
+    font-size: 15px; letter-spacing: 2px;
+    padding: 11px 40px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:active { border-color: #ffffff44; color: #e8dcc8; }
+
+  .menu-footer {
+    position: absolute; bottom: 28px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 9px; letter-spacing: 4px; color: #ffffff18;
+  }
+
+  /* ── MAP SCREEN ── */
+  #map { }
+
+  .map-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 52px 20px 14px;
+    border-bottom: 1px solid #ffffff0f;
+    background: linear-gradient(to bottom, #0a071088, transparent);
+    position: relative; z-index: 10;
+  }
+  .map-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 10px; letter-spacing: 2px; color: #e8d97a;
+  }
+  .btn-back {
+    background: transparent; border: 1px solid #ffffff18;
+    color: #a898c8; font-family: 'Cinzel Decorative', serif;
+    font-size: 9px; letter-spacing: 1px;
+    padding: 7px 14px; cursor: pointer;
+  }
+  .btn-back:active { border-color: #ffffff33; }
+  .map-stats { display: flex; gap: 12px; }
+  .stat { color: #a898c8; font-size: 12px; }
+
+  .map-area { flex: 1; position: relative; overflow: hidden; }
+
+  .region-node {
+    position: absolute; transform: translate(-50%, -50%);
+    cursor: pointer; z-index: 10;
+  }
+  .node-core {
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 2px solid; background: #0a0710cc;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; transition: box-shadow 0.3s;
+    position: relative; z-index: 2;
+  }
+  .node-pulse {
+    position: absolute; width: 42px; height: 42px;
+    border-radius: 50%; top: 0; left: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); opacity: 0.4; }
+    50%      { transform: scale(2); opacity: 0; }
+  }
+  .node-tooltip {
+    position: absolute; bottom: 52px; left: 50%;
+    transform: translateX(-50%);
+    background: #0d0920ee; border: 1px solid #ffffff18;
+    padding: 8px 12px; min-width: 140px; text-align: center;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    pointer-events: none;
+    animation: fadeUp 0.15s ease;
+  }
+  .tooltip-element { font-family: 'Cinzel Decorative', serif; font-size: 9px; letter-spacing: 2px; margin-bottom: 3px; }
+  .tooltip-name { font-size: 13px; color: #e8dcc8; margin-bottom: 4px; }
+  .tooltip-eggs { font-size: 11px; color: #a898c8; }
+  .tooltip-locked { font-size: 9px; color: #ff6b6b88; letter-spacing: 2px; margin-top: 3px; }
+
+  /* Detail panel */
+  .detail-panel {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, #0a0710ff 70%, transparent);
+    padding: 48px 24px 32px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    z-index: 20;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+  .panel-element { font-family: 'Cinzel Decorative', serif; font-size: 10px; letter-spacing: 2px; margin-bottom: 4px; }
+  .panel-name { font-family: 'Cinzel Decorative', serif; font-size: 20px; color: #f0d97a; margin-bottom: 6px; }
+  .panel-desc { font-size: 13px; color: #a898c8; font-style: italic; line-height: 1.5; margin-bottom: 8px; max-width: 220px; }
+  .panel-eggs { font-size: 12px; color: #9898a8; }
+  .panel-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+  .btn-explore {
+    background: linear-gradient(135deg, #6a0dad, #9b5de5);
+    color: #f0e8ff; font-family: 'Cinzel Decorative', serif;
+    font-size: 10px; letter-spacing: 2px;
+    padding: 13px 24px; border: none; cursor: pointer;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  }
+  .btn-explore:active { opacity: 0.8; }
+  .btn-dismiss { color: #ffffff33; font-size: 12px; cursor: pointer; background: none; border: none; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- MENU SCREEN -->
+<div id="menu" class="screen active">
+  <div class="bg"></div>
+  <div id="menu-runes"></div>
+  <div class="menu-egg">🥚</div>
+  <div class="eyebrow">An Ancient World Awaits</div>
+  <div class="game-title">Runehatch</div>
+  <div class="tagline">Breed the Legend. Battle the World.</div>
+  <div class="menu-buttons">
+    <button class="btn-primary" onclick="showMap()">BEGIN JOURNEY</button>
+    <button class="btn-secondary">Continue</button>
+    <button class="btn-secondary">Codex</button>
+  </div>
+  <div class="menu-footer">ᚠ RUNEHATCH ᚠ</div>
+</div>
+
+<!-- MAP SCREEN -->
+<div id="map" class="screen">
+  <div class="bg"></div>
+  <div class="map-header">
+    <button class="btn-back" onclick="showMenu()">← Menu</button>
+    <div class="map-title">ᚠ World of Runeveil ᚠ</div>
+    <div class="map-stats">
+      <span class="stat">🥚 12</span>
+      <span class="stat">⚔️ 4</span>
+    </div>
+  </div>
+  <div class="map-area" id="map-area"></div>
+</div>
+
+<script>
+const REGIONS = [
+  { id:'emberveil',   name:'Emberveil Peaks',   element:'Ember',   color:'#ff6b35', eggs:3, locked:false, x:0.22, y:0.30, desc:'Volcanic highlands where fire-born creatures nest in lava crevices.' },
+  { id:'tidemarsh',  name:'Tidemarsh Delta',    element:'Tide',    color:'#00b4d8', eggs:5, locked:false, x:0.58, y:0.62, desc:'Vast wetlands shaped by ancient tidal runes, teeming with aquatic hybrids.' },
+  { id:'voidspire',  name:'Voidspire Citadel',  element:'Void',    color:'#9b5de5', eggs:2, locked:true,  x:0.74, y:0.22, desc:'A floating fortress lost between dimensions. Only the rarest bloodlines may enter.' },
+  { id:'stormreach', name:'Stormreach Heights', element:'Storm',   color:'#f7b731', eggs:4, locked:false, x:0.40, y:0.72, desc:'Storm-wracked plateaus where lightning eggs are charged by perpetual tempests.' },
+  { id:'gloomfen',   name:'Gloomfen Hollow',    element:'Shadow',  color:'#8e7dbe', eggs:1, locked:true,  x:0.15, y:0.65, desc:'A cursed fen where shadow creatures lurk just beyond the veil of sight.' },
+  { id:'crystalpeak',name:'Crystalpeak Summit', element:'Crystal', color:'#90e0ef', eggs:6, locked:false, x:0.82, y:0.55, desc:'Towering crystal spires that amplify and store ancient runic resonance.' },
+];
+
+const RUNES = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚷ','ᚹ','ᚺ','ᚾ','ᛁ','ᛃ'];
+
+// Spawn floating runes
+function spawnRunes(containerId, count) {
+  const el = document.getElementById(containerId);
+  for (let i = 0; i < count; i++) {
+    const r = document.createElement('div');
+    r.className = 'rune';
+    r.textContent = RUNES[Math.floor(Math.random() * RUNES.length)];
+    r.style.cssText = `
+      left:${Math.random()*95}%;top:${Math.random()*95}%;
+      font-size:${14+Math.random()*22}px;
+      --dur:${6+Math.random()*8}s;
+      --delay:${Math.random()*4}s;
+      --op:${0.04+Math.random()*0.08};
+    `;
+    el.appendChild(r);
+  }
+}
+spawnRunes('menu-runes', 16);
+
+let selectedRegion = null;
+
+function buildMap() {
+  const area = document.getElementById('map-area');
+  area.innerHTML = '';
+  const W = area.offsetWidth || window.innerWidth;
+  const H = area.offsetHeight || window.innerHeight - 120;
+
+  REGIONS.forEach(region => {
+    const node = document.createElement('div');
+    node.className = 'region-node';
+    node.style.left = (region.x * W) + 'px';
+    node.style.top  = (region.y * H) + 'px';
+
+    const pulse = document.createElement('div');
+    pulse.className = 'node-pulse';
+    pulse.style.backgroundColor = region.color;
+    if (region.locked) pulse.style.display = 'none';
+
+    const core = document.createElement('div');
+    core.className = 'node-core';
+    core.style.borderColor = region.locked ? '#ffffff22' : region.color;
+    core.style.opacity = region.locked ? '0.4' : '1';
+    core.style.boxShadow = `0 0 12px ${region.color}66`;
+    core.textContent = region.locked ? '🔒' : '🥚';
+
+    node.appendChild(pulse);
+    node.appendChild(core);
+
+    if (!region.locked) {
+      node.onclick = () => selectRegion(region);
+    }
+
+    area.appendChild(node);
+  });
+}
+
+function selectRegion(region) {
+  selectedRegion = region;
+  // Remove existing panel
+  const old = document.getElementById('detail-panel');
+  if (old) old.remove();
+
+  const panel = document.createElement('div');
+  panel.id = 'detail-panel';
+  panel.className = 'detail-panel';
+  panel.innerHTML = `
+    <div class="panel-info">
+      <div class="panel-element" style="color:${region.color}">${region.element} Region</div>
+      <div class="panel-name">${region.name}</div>
+      <div class="panel-desc">${region.desc}</div>
+      <div class="panel-eggs">🥚 ${region.eggs} eggs found</div>
+    </div>
+    <div class="panel-actions">
+      <button class="btn-explore">EXPLORE</button>
+      <button class="btn-dismiss" onclick="dismissPanel()">Dismiss</button>
+    </div>
+  `;
+  document.getElementById('map-area').appendChild(panel);
+}
+
+function dismissPanel() {
+  const p = document.getElementById('detail-panel');
+  if (p) p.remove();
+}
+
+function showMap() {
+  document.getElementById('menu').classList.remove('active');
+  document.getElementById('map').classList.add('active');
+  setTimeout(buildMap, 50);
+}
+
+function showMenu() {
+  document.getElementById('map').classList.remove('active');
+  document.getElementById('menu').classList.add('active');
+  dismissPanel();
+}
+
+// Handle resize
+window.addEventListener('resize', () => {
+  if (document.getElementById('map').classList.contains('active')) buildMap();
+});
+</script>
+</body>
+</html>
